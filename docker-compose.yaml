@@ -1,0 +1,55 @@
+version: "3.9"
+
+services:
+  bind:
+    environment:
+      DOCKER_GATEWAY_HOST: "172.17.0.1"
+    build:
+      context: bind
+    ports:
+    - "127.0.0.1:53:53/udp"
+    - "127.0.0.1:53:53/tcp"
+
+
+  load_balancer_ua:
+    build:
+      context: ./nginx
+    volumes:
+      - ./nginx/nginx_ua.conf:/etc/nginx/conf.d/nginx.conf
+    ports:
+        - "127.0.0.10:80:80"
+  node_ua_1:
+    build:
+      context: ./nginx
+    volumes:
+      - ./ua_static:/home/static
+    ports:
+        - "127.0.0.11:80:80"
+
+  node_ua_2:
+    build:
+      context: ./nginx
+    ports:
+        - "127.0.0.12:80:80"
+
+
+  load_balancer_world:
+    build:
+      context: ./nginx
+    volumes:
+      - ./nginx/nginx_world.conf:/etc/nginx/conf.d/nginx.conf
+    ports:
+        - "127.0.0.20:80:80"
+  node_world_1:
+    build:
+      context: ./nginx
+    volumes:
+      - ./world_static:/home/static
+    ports:
+        - "127.0.0.21:80:80"
+
+  node_world_2:
+    build:
+      context: ./nginx
+    ports:
+        - "127.0.0.22:80:80"
